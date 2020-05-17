@@ -37,6 +37,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * [avatar description]
+     * @return [type] [description]
+     */
+    public function avatar()
+    {
+        return 'https://www.gravatar.com/avatar/' . md5($this->email) . '?d=mp';
+    }
+
+    /**
+     * [following description]
+     * @return [type] [description]
+     */
     public function following()
     {
         return $this->belongsToMany(
@@ -44,6 +57,10 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * [followers description]
+     * @return [type] [description]
+     */
     public function followers()
     {
         return $this->belongsToMany(
@@ -51,6 +68,10 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * [tweetsFromFollowing description]
+     * @return [type] [description]
+     */
     public function tweetsFromFollowing()
     {
         return $this->hasManyThrough(
