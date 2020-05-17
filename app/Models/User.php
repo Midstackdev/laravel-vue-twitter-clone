@@ -47,6 +47,15 @@ class User extends Authenticatable
     }
 
     /**
+     * [tweets description]
+     * @return [type] [description]
+     */
+    public function tweets()
+    {
+        return $this->hasMany(Tweet::class);
+    }
+
+    /**
      * [following description]
      * @return [type] [description]
      */

@@ -1,35 +1,78 @@
 <template>
     <div>
+        <div class="border-b-8 border-gray-800 p-4">
+            <AppTweetCompose
+            />
+        </div>
         <AppTweet
             v-for="tweet in tweets"
             :key="tweet.id"
             :tweet="tweet"
         />
+        <div 
+            v-if="tweets.length"
+            v-observe-visibility="{
+                callback: handleScrolledToBottomOfTimeline
+            }"
+        >
+            
+        </div>
     </div>
 </template>
 
 <script>
-    import axios from 'axios'
+    import { mapGetters, mapActions } from 'vuex'
     import AppTweet from '../tweets/AppTweet'
+    import AppTweetCompose from '../compose/AppTweetCompose'
+
     export default {
         components: {
-            AppTweet
+            AppTweet,
+            AppTweetCompose
         },
         data () {
             return {
-                tweets: null
+                page: 1,
+                lastPage: 1
+            }
+        },
+        computed: {
+            ...mapGetters({
+                tweets: 'timeline/tweets'
+            }),
+
+            urlWithPage () {
+                return `/api/timeline?page=${this.page}`
             }
         },
         methods: {
-            async getTweets () {
-                let response = await axios.get('/api/timeline')
+            ...mapActions({
+                getTweets: 'timeline/getTweets'
+            }),
 
-                this.tweets = response.data.data 
+            loadTweets () {
+                this.getTweets(this.urlWithPage).then((response) => {
+                    this.lastPage = response .data.meta.last_page
+                })
+            },
+
+            handleScrolledToBottomOfTimeline (isVisible) {
+                if (!isVisible) {
+                    return
+                }
+
+
+                if (this.lastPage === this.page) {
+                    return
+                }
+
+                this.page++
+                
+                this.loadTweets()
             }
         },
         mounted() {
-            this.getTweets()
-            console.log('Component mounted.')
+            this.loadTweets()
         }
     }
 </script>
