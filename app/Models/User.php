@@ -47,6 +47,16 @@ class User extends Authenticatable
     }
 
     /**
+     * [hasLiked description]
+     * @param  Tweet   $tweet [description]
+     * @return boolean        [description]
+     */
+    public function hasLiked(Tweet $tweet)
+    {
+        return $this->likes->contains('tweet_id', $tweet->id);
+    }
+
+    /**
      * [tweets description]
      * @return [type] [description]
      */
@@ -86,5 +96,14 @@ class User extends Authenticatable
         return $this->hasManyThrough(
             Tweet::class, Follower::class, 'user_id', 'user_id', 'id', 'following_id'
         );
+    }
+
+    /**
+     * [likes description]
+     * @return [type] [description]
+     */
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }

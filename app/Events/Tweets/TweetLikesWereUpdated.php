@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Events\Tweet;
+namespace App\Events\Tweets;
 
-use App\Http\Resources\TweetResource;
 use App\Models\Tweet;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -12,20 +12,21 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TweetWasCreated implements ShouldBroadcast
+class TweetLikesWereUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    protected $tweet;
+    protected $tweet, $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Tweet $tweet)
+    public function __construct(User $user, Tweet $tweet)
     {
         $this->tweet = $tweet;
+        $this->user = $user;
     }
 
     /**
@@ -34,7 +35,7 @@ class TweetWasCreated implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'TweetWasCreated';
+        return 'TweetLikesWereUpdated';
     }
 
     /**
@@ -43,7 +44,11 @@ class TweetWasCreated implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return (new TweetResource($this->tweet))->jsonSerialize();
+        return [
+            'id' => $this->tweet->id,
+            'user_id' => $this->user->id,
+            'count' => $this->tweet->likes->count(),
+        ];
     }
 
     /**
@@ -53,9 +58,6 @@ class TweetWasCreated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return $this->tweet->user->followers->map(function ($user) {
-            return new PrivateChannel('timeline.' . $user->id);
-        })
-            ->toArray();
+        return new Channel('tweets');
     }
 }

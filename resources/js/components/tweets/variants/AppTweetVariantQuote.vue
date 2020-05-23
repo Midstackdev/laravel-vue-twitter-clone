@@ -13,6 +13,10 @@
                 class="border border-gray-700 rounded-lg mt-4"
                 :tweet="tweet.original_tweet"
             />
+
+            <AppTweetActionGroup 
+                :tweet="tweet"
+            />
         </div>
     </div>
 </template>
