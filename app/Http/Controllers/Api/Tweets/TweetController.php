@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Tweets;
 
-use App\Events\Tweet\TweetWasCreated;
+use App\Events\Tweets\TweetWasCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tweets\TweetStoreRequest;
 use App\Tweets\TweetType;

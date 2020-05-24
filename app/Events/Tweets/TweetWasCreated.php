@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Tweet;
+namespace App\Events\Tweets;
 
 use App\Http\Resources\TweetResource;
 use App\Models\Tweet;
