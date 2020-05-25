@@ -1,17 +1,34 @@
 <template>
     <form class="flex" @submit.prevent="submit">
-        <div class="mr-3">
-            <img :src="$user.avatar" class="w-12 rounded-full">
-        </div>
+        
+        <img :src="$user.avatar" class="w-12 rounded-full mr-3 w-12 h-12">
+        
         <div class="flex-grow">
             <AppTweetComposeTextarea 
                 v-model="form.body"
             />
 
+            <AppTweetImagePreview 
+                :images="media.images"
+                v-if="media.images.length"
+                @remove="removeImage"
+            />
+
+            <AppTweetVideoPreview 
+                :video="media.video"
+                v-if="media.video"
+                @remove="removeVideo"
+            />
             <div class="flex justify-between">
-                <div>
-                    
-                </div>
+                <ul class="flex items-center"> 
+                    <li class="mr-4">
+                        <AppTweetComposeMediaButton 
+                            id="media-compose"
+                            @selected="handleMediaSelected"
+                        />
+                    </li>     
+                </ul>
+                
                 <div class="flex items-center justify-end">
                     <AppTweetComposeLimit
                         class="mr-2"
@@ -36,8 +53,16 @@
         data () {
             return {
                 form: {
-                    body: ''
-                }
+                    body: '',
+                    media: []
+                },
+
+                media: {
+                    images: [],
+                    video: null
+                },
+
+                mediaTypes: {}
             }
         },
 
@@ -46,7 +71,44 @@
                 await axios.post(`/api/tweets`, this.form)
 
                 this.form.body = ''
+            },
+
+            removeVideo () {
+                this.media.video = null
+            },
+
+            removeImage (image) {
+                this.media.images = this.media.images.filter((i) => {
+                    return image !== i
+                })
+            },
+
+            async getMeidaTypes () {
+                let response = await axios.get(`api/media/types`)
+
+                this.mediaTypes = response.data.data
+            },
+
+            handleMediaSelected (files) {
+                Array.from(files).slice(0, 4).forEach((file) => {
+                    if (this.mediaTypes.image.includes(file.type)) {
+                        this.media.images.push(file)
+                    }
+
+                    if (this.mediaTypes.video.includes(file.type)) {
+                        this.media.video = file
+                    }
+
+                })
+                
+                if (this.media.video) {
+                    this.media.images = []
+                }
             }
+        },
+
+        mounted () {
+            this.getMeidaTypes()
         }
     }
 </script>
