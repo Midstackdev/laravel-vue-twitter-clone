@@ -12,7 +12,11 @@
                 <div>
                     
                 </div>
-                <div>
+                <div class="flex items-center justify-end">
+                    <AppTweetComposeLimit
+                        class="mr-2"
+                        :body="form.body"
+                    />
                     <button
                         type="submit"
                         class="bg-blue-500 rounded-full text-gray-300 text-center px-4 py-3 font-bold leading-none"
