@@ -7,7 +7,12 @@
             <AppTweetComposeTextarea 
                 v-model="form.body"
             />
-
+            <AppTweetComposeMediaProgress 
+                class="mb-4"
+                v-if="media.progress"
+                :progress="media.progress"
+            />
+           
             <AppTweetImagePreview 
                 :images="media.images"
                 v-if="media.images.length"
@@ -59,7 +64,8 @@
 
                 media: {
                     images: [],
-                    video: null
+                    video: null,
+                    progress: 0
                 },
 
                 mediaTypes: {}
@@ -68,9 +74,48 @@
 
         methods: {
             async submit () {
+                if (this.media.images.length || this.media.video) {
+                    let media  = await this.uploadMedia()
+                    this.form.media = media.data.data.map(r => r.id)
+                }
+
+                
                 await axios.post(`/api/tweets`, this.form)
 
                 this.form.body = ''
+                this.form.media = []
+                this.media.video = null
+                this.media.images = []
+                this.media.progress = 0
+            },
+
+            handleUploadProgress (event) {
+                this.media.progress = parseInt(Math.round((event.loaded / event.total) * 100))
+            },
+
+            async uploadMedia () {
+                return await axios.post(`/api/media`, this.buildMediaForm(), {
+                    headers: {
+                        'content-Type': 'multipart/form-data'
+                    },
+                    onUploadProgress: this.handleUploadProgress
+                })
+            },
+
+            buildMediaForm () {
+                let form = new FormData()
+
+                if (this.media.images.length) {
+                    this.media.images.forEach((image, index) => {
+                        form.append(`media[${index}]`, image)
+                    })
+                }
+
+                if (this.media.video) {
+                    form.append('media[0]', this.media.video)
+                }
+
+                return form
             },
 
             removeVideo () {
