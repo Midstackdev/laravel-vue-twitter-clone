@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Tweet extends Model
@@ -11,6 +12,16 @@ class Tweet extends Model
      * @var array
      */
     protected $guarded = [];
+
+    /**
+     * [scopeParent description]
+     * @param  Builder $builder [description]
+     * @return [type]           [description]
+     */
+    public function scopeParent(Builder $builder)
+    {
+        return $builder->whereNull('parent_id');
+    }
     
     /**
      * [user description]
@@ -64,5 +75,14 @@ class Tweet extends Model
     public function media()
     {
         return $this->hasMany(TweetMedia::class);
+    }
+
+    /**
+     * [replies description]
+     * @return [type] [description]
+     */
+    public function replies()
+    {
+        return $this->hasMany(Tweet::class, 'parent_id');
     }
 }
