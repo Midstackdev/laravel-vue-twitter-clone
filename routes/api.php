@@ -2,6 +2,7 @@
 
 Route::get('/timeline', 'Api\Timeline\TimelineController@index');
 
+Route::get('/tweets', 'Api\Tweets\TweetController@index');
 Route::post('/tweets', 'Api\Tweets\TweetController@store');
 
 Route::post('/tweets/{tweet}/replies', 'Api\Tweets\TweetReplyController@store');
@@ -16,3 +17,5 @@ Route::post('/tweets/{tweet}/quotes', 'Api\Tweets\TweetQuoteController@store');
 
 Route::post('/media', 'Api\Media\MediaController@store');
 Route::get('/media/types', 'Api\Media\MediaTypesController@index');
+
+Route::get('/notifications', 'Api\Notifications\NotificationController@index');

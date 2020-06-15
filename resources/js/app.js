@@ -43,11 +43,13 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 import timeline from './store/timeline'
 import likes from './store/likes'
 import retweets from './store/retweets'
+import notifications from './store/notifications'
 const store = new Vuex.Store({
     modules: {
         timeline,
         likes,
-        retweets
+        retweets,
+        notifications
     }
 })
 /**
@@ -68,6 +70,7 @@ Echo.channel('tweets')
         }
 
         store.commit('timeline/SET_LIKES', e)
+        store.commit('notifications/SET_LIKES', e)
         
     })
 
@@ -77,12 +80,14 @@ Echo.channel('tweets')
         }
 
         store.commit('timeline/SET_RETWEETS', e)
+        store.commit('notifications/SET_RETWEETS', e)
         
     })
 
     .listen('.TweetRepliesWereUpdated', (e) => {
 
         store.commit('timeline/SET_REPLIES', e)
+        store.commit('notifications/SET_REPLIES', e)
         
     })
     .listen('.TweetWasDeleted', (e) => {
